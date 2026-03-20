@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Jenkins CI/CD Demo</h1>
+      <h1>This is my Jenkins CI/CD Demo App</h1>
 
       <input
         type="text"
