@@ -22,17 +22,16 @@ pipeline { // define CI/CD flow
             }
         }
 
-        stage('Test') { 'test' stage (phase)
+        stage('Test') { // 'test' stage (phase)
             agent {
                 docker {
                     image 'node:22.14.0-alpine' //docker will run my code in a Docker container
                     reuseNode true
                 }
             }
-
-            steps { // execute Linux commands below
+            steps { 
                 sh '''
-                    test -f build/index.html
+                    test -f build/index.html 
                     npm test
                 '''
             }
