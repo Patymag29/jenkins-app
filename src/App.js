@@ -1,23 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
 
 function App() {
+  const [tasks, setTasks] = useState(["Setup Jenkins", "Learn CI/CD"]);
+  const [input, setInput] = useState("");
+
+  const addTask = () => {
+    if (input.trim() === "") return;
+    setTasks([...tasks, input]);
+    setInput("");
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Jenkins CI/CD Demo</h1>
+
+      <input
+        type="text"
+        placeholder="New task"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+
+      <button onClick={addTask}>Add</button>
+
+      <ul>
+        {tasks.map((task, index) => (
+          <li key={index}>{task}</li>
+        ))}
+      </ul>
     </div>
   );
 }
