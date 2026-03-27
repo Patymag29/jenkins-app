@@ -91,6 +91,7 @@ pipeline { // define CI/CD flow
             //     '''
             // } // end of 'sh' block
             steps {
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
                 sh '''
                     aws --version
                     aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct
