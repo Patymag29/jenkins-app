@@ -65,7 +65,7 @@ pipeline { // define CI/CD flow
                 docker {
                     image 'amazon/aws-cli'
                     reuseNode true
-                    args '--entrypoint ""' // Override the default entrypoint to allow running custom commands
+                    args '--entrypoint= ""' // Override the default entrypoint to allow running custom commands
                 }
             }
             // steps {
@@ -94,9 +94,7 @@ pipeline { // define CI/CD flow
                 withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
                 sh '''
                     aws --version
-                    aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct
-                    echo "Deploying to AWS S3..."
-                '''
+                    aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct '''
             } // end of 'sh' block
         }// end of 'deploy' stage
     } // end of 'stages' block
