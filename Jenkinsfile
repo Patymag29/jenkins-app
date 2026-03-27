@@ -116,16 +116,23 @@ pipeline { // define CI/CD flow
                     passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                 )]) {
                     sh '''
-                        echo "Checking AWS CLI version..."
-                        aws --version
-                        
-                        echo "Listing S3 buckets..."
-                        aws s3 ls
-                        
-                        echo "Deploying build folder to S3..."
-                        # Comando para deploy do build para S3
-                        aws s3 sync build/ s3://seu-bucket-name/ --delete
-                    '''
+                # Debug: Mostrar informações das credenciais (sem expor a chave completa)
+                echo "AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:0:10}..."
+                echo "AWS_SECRET_ACCESS_KEY length: ${#AWS_SECRET_ACCESS_KEY}"
+                
+                # Configurar explicitamente as credenciais
+                aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+                aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+                aws configure set region us-east-1
+                
+                echo "Checking AWS CLI version..."
+                aws --version
+                
+                echo "Testing credentials with sts get-caller-identity..."
+                aws sts get-caller-identity
+                
+                echo "Listing S3 buckets..."
+                aws s3 ls '''
                 } // end of 'withCredentials' block
             } // end of 'steps' block - ✅ ADICIONADO
         } // end of 'deploy' stage
