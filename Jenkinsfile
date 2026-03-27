@@ -102,7 +102,7 @@ pipeline { // define CI/CD flow
         docker {
             image 'amazon/aws-cli'
             reuseNode true
-            entrypoint ''  // Override the default entrypoint to allow running custom commands
+           args '--entrypoint ""'  // Override the default entrypoint to allow running custom commands
         }
     }
     steps {
