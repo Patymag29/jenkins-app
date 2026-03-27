@@ -60,43 +60,71 @@ pipeline { // define CI/CD flow
         //         '''
         //     } // end of 'sh' block
         // }// end of 'deploy' stage
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    reuseNode true
-                    args '--entrypoint= ""' // Override the default entrypoint to allow running custom commands
-                }
-            }
-            // steps {
-            //     sh '''
-            //         # npm install netlify-cli
-            //         # node_modules/.bin/netlify --version
-            //         # echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-            //         # node_modules/.bin/netlify status
-            //         # # deploy to build folder
-            //         # node_modules/.bin/netlify deploy --prod --dir=build
+        // stage('Deploy') {
+        //     agent {
+        //         docker {
+        //             image 'amazon/aws-cli'
+        //             reuseNode true
+        //             args '--entrypoint= ""' // Override the default entrypoint to allow running custom commands
+        //         }
+        //     }
+        //     // steps {
+        //     //     sh '''
+        //     //         # npm install netlify-cli
+        //     //         # node_modules/.bin/netlify --version
+        //     //         # echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+        //     //         # node_modules/.bin/netlify status
+        //     //         # # deploy to build folder
+        //     //         # node_modules/.bin/netlify deploy --prod --dir=build
 
-            //         ####### custom docker image
-            //         netlify --version
-            //         echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-            //         netlify status
-            //         netlify deploy --prod --dir=build
-            //     '''
-            // } // end of 'sh' block
-            // steps {
-            //     sh '''
-            //         echo "Deploying to Netlify..."
-            //         netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-            //     '''
-            // } // end of 'sh' block
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
-                sh '''
-                    aws --version
-                    aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct '''
-            } // end of 'sh' block
-        }// end of 'deploy' stage
+        //     //         ####### custom docker image
+        //     //         netlify --version
+        //     //         echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+        //     //         netlify status
+        //     //         netlify deploy --prod --dir=build
+        //     //     '''
+        //     // } // end of 'sh' block
+        //     // steps {
+        //     //     sh '''
+        //     //         echo "Deploying to Netlify..."
+        //     //         netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
+        //     //     '''
+        //     // } // end of 'sh' block
+        //     steps {
+        //         withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
+        //         sh '''
+        //             aws --version
+        //             aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct '''
+        //     } // end of 'sh' block
+        // }// end of 'deploy' stage
+        stage('Deploy') {
+    agent {
+        docker {
+            image 'amazon/aws-cli'
+            reuseNode true
+            entrypoint ''  // Override the default entrypoint to allow running custom commands
+        }
+    }
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'my-aws',
+            usernameVariable: 'AWS_ACCESS_KEY_ID',
+            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+        )]) {
+            sh '''
+                echo "Checking AWS CLI version..."
+                aws --version
+                
+                echo "Listing S3 buckets..."
+                aws s3 ls
+                
+                echo "Deploying build folder to S3..."
+                # Comando para deploy do build para S3
+                aws s3 sync build/ s3://seu-bucket-name/ --delete
+            '''
+        }
+    }
+}
     } // end of 'stages' block
 }// end of pipeline
 // netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
