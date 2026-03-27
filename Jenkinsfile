@@ -20,7 +20,7 @@ pipeline { // define CI/CD flow
                     ls -la
                 '''
             }
-        }
+        } // end of 'build' stage
 
         stage('Test') { // 'test' stage (phase)
             agent {
@@ -35,7 +35,7 @@ pipeline { // define CI/CD flow
                     npm test
                 '''
             }
-        }
+        } // end of 'test' stage
 
         // stage('Deploy') {
         //     agent {
@@ -98,6 +98,7 @@ pipeline { // define CI/CD flow
                 '''
             } // end of 'sh' block
         }// end of 'deploy' stage
+    } // end of 'stages' block
 }// end of pipeline
 // netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
 //sh '''
