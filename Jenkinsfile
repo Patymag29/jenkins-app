@@ -22,6 +22,8 @@ pipeline { // define CI/CD flow
             }
         } // end of 'build' stage
 
+
+
         stage('Test') { // 'test' stage (phase)
             agent {
                 docker {
@@ -36,6 +38,8 @@ pipeline { // define CI/CD flow
                 '''
             }
         } // end of 'test' stage
+
+
 
         // stage('Deploy') {
         //     agent {
@@ -98,35 +102,35 @@ pipeline { // define CI/CD flow
         //     } // end of 'sh' block
         // }// end of 'deploy' stage
         stage('Deploy') {
-    agent {
-        docker {
-            image 'amazon/aws-cli'
-            reuseNode true
-           args '--entrypoint ""'  // Override the default entrypoint to allow running custom commands
-        }
-    }
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'my-aws',
-            usernameVariable: 'AWS_ACCESS_KEY_ID',
-            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-        )]) {
-            sh '''
-                echo "Checking AWS CLI version..."
-                aws --version
-                
-                echo "Listing S3 buckets..."
-                aws s3 ls
-                
-                echo "Deploying build folder to S3..."
-                # Comando para deploy do build para S3
-                aws s3 sync build/ s3://seu-bucket-name/ --delete
-            '''
-        }
-    }
-}
-    } // end of 'stages' block
-}// end of pipeline
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    reuseNode true
+                    args '--entrypoint ""'  // Override the default entrypoint to allow running custom commands
+                }
+            }
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'my-aws',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    sh '''
+                        echo "Checking AWS CLI version..."
+                        aws --version
+                        
+                        echo "Listing S3 buckets..."
+                        aws s3 ls
+                        
+                        echo "Deploying build folder to S3..."
+                        # Comando para deploy do build para S3
+                        aws s3 sync build/ s3://seu-bucket-name/ --delete
+                    '''
+                } // end of 'withCredentials' block
+            } // end of 'steps' block - ✅ ADICIONADO
+        } // end of 'deploy' stage
+    } // end of 'main' stage   
+} // end of 'pipeline' block
 // netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
 //sh '''
          //   npm install -g netlify-cli
