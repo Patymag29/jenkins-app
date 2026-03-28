@@ -109,7 +109,7 @@ pipeline { // define CI/CD flow
                         passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                     )]) {
                         sh '''
-                            export AWS_DEFAULT_REGION=us-east-1
+                            export AWS_DEFAULT_REGION=ca-central-1
                             
                             echo "🚀 Deploying to bucket: amzn-s3-bucket-patymag29"
                             
@@ -117,7 +117,7 @@ pipeline { // define CI/CD flow
                             aws s3 sync build/ s3://amzn-s3-bucket-patymag29/ --delete
                             
                             echo "✅ Deploy concluded!"
-                            echo "🌐 Available site em: http://amzn-s3-bucket-patymag29.s3-website-us-east-1.amazonaws.com"
+                            echo "🌐 Available site em: http://amzn-s3-bucket-patymag29.s3-website.ca-central-1.amazonaws.com"
                         '''
                     }
             }// end of 'steps' block
