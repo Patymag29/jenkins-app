@@ -116,7 +116,7 @@ pipeline { // define CI/CD flow
                             # deploy from build to S3
                             aws s3 sync build/ s3://amzn-s3-bucket-patymag29/ --delete
                             
-                            echo "✅ Deploy concluded!"
+                            echo "✅ Deploy concluded successfully!"
                             echo "🌐 Available site em: http://amzn-s3-bucket-patymag29.s3-website.ca-central-1.amazonaws.com"
                         '''
                     }
