@@ -72,35 +72,7 @@ pipeline { // define CI/CD flow
         //             args '--entrypoint= ""' // Override the default entrypoint to allow running custom commands
         //         }
         //     }
-        //     // steps {
-        //     //     sh '''
-        //     //         # npm install netlify-cli
-        //     //         # node_modules/.bin/netlify --version
-        //     //         # echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-        //     //         # node_modules/.bin/netlify status
-        //     //         # # deploy to build folder
-        //     //         # node_modules/.bin/netlify deploy --prod --dir=build
-
-        //     //         ####### custom docker image
-        //     //         netlify --version
-        //     //         echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-        //     //         netlify status
-        //     //         netlify deploy --prod --dir=build
-        //     //     '''
-        //     // } // end of 'sh' block
-        //     // steps {
-        //     //     sh '''
-        //     //         echo "Deploying to Netlify..."
-        //     //         netlify deploy --prod --dir=build --auth=$NETLIFY_AUTH_TOKEN --site=$NETLIFY_SITE_ID
-        //     //     '''
-        //     // } // end of 'sh' block
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')])
-        //         sh '''
-        //             aws --version
-        //             aws s3 ls #------list buckets to verify AWS CLI is working and credentials are correct '''
-        //     } // end of 'sh' block
-        // }// end of 'deploy' stage
+       
         stage('Deploy') {
             agent {
                 docker {
@@ -109,27 +81,46 @@ pipeline { // define CI/CD flow
                     args '--entrypoint ""'  // Override the default entrypoint to allow running custom commands
                 }
             }
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'my-aws',
-                    usernameVariable: 'AWS_ACCESS_KEY_ID',
-                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
-                )]) {
-                    sh '''             
-                     echo "Checking AWS CLI version..."
-                     aws --version
+            // steps {
+            //     withCredentials([usernamePassword(
+            //         credentialsId: 'my-aws',
+            //         usernameVariable: 'AWS_ACCESS_KEY_ID',
+            //         passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+            //     )]) {
+            //         sh '''             
+            //          echo "Checking AWS CLI version..."
+            //          aws --version
                 
-                    echo "Testing credentials with sts get-caller-identity..."
-                    aws sts get-caller-identity
+            //         echo "Testing credentials with sts get-caller-identity..."
+            //         aws sts get-caller-identity
                     
-                    echo "Listing S3 buckets..."
-                    aws s3 ls 
+            //         echo "Listing S3 buckets..."
+            //         aws s3 ls 
 
-                    echo "Deploying build folder to S3..."
-                    # aws s3 sync build/ s3://seu-bucket-name/ --delete 
-                    '''
-                } // end of 'withCredentials' block
-            } // end of 'steps' block - ✅ ADICIONADO
+            //         echo "Deploying build folder to S3..."
+            //         # aws s3 sync build/ s3://seu-bucket-name/ --delete 
+            //         '''
+            //     } // end of 'withCredentials' block
+            // } // end of 'steps' block - ✅ ADICIONADO
+            steps {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'my-aws',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )]) {
+                        sh '''
+                            export AWS_DEFAULT_REGION=us-east-1
+                            
+                            echo "🚀 Deploying to bucket: amzn-s3-bucket-patymag29"
+                            
+                            # deploy from build to S3
+                            aws s3 sync build/ s3://amzn-s3-bucket-patymag29/ --delete
+                            
+                            echo "✅ Deploy concluded!"
+                            echo "🌐 Available site em: http://amzn-s3-bucket-patymag29.s3-website-us-east-1.amazonaws.com"
+                        '''
+                    }
+            }// end of 'steps' block
         } // end of 'deploy' stage
     } // end of 'main' stage   
 } // end of 'pipeline' block
